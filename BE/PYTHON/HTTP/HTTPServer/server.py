@@ -11,6 +11,7 @@ from ParseRoadTest.CSVReader import ADRCSVReader, STGRTKCSVReader, OFFLINERTKCSV
 from ParseRoadTest.DistanceDiff import DistanceDiffItem, DistanceDiff
 from ParseRoadTest.GroundTruth import GroundTruth
 from ParseRoadTest.Kepler import KeplerDraw
+from Snap.snap import SNAPCSVReader
 from S3Log.S3Log import AWSS3
 
 app = Flask(__name__)
@@ -220,6 +221,29 @@ def parsertkroadtest():
             resp[c.replace(".csv", "")] = r.SummaryDistance()
             r.WriteToCSV(outputpath + "/" + c.replace(".csv", "-diff.csv"))
             resp[c.replace(".csv", "")]["html"] = h.WriteToHTML()
+    return resp
+
+@app.route('/snap', methods=['POST'])
+def SnapProxy():
+    print(request.headers)
+    print(request.json)
+    filepath = request.json["filepath"]
+    filename = request.json["filename"]
+    latitudeColumnName  = request.json["latitude_column_name"]
+    longitudeColumnName = request.json["longitude_column_name"]
+    timestampColumnName = request.json["timestamp_column_name"]
+    file = filepath + "/" + filename
+    s = SNAPCSVReader(file)
+    if s.OverWriteSnapResultToOriginFile(latitudeColumnName, longitudeColumnName, timestampColumnName) == True:
+        resp = {
+            "code": 0,
+            "message": "overwrite origin file success"
+        }
+    else:
+        resp = {
+            "code": 0,
+            "message": "overwrite origin file failed"
+        }
     return resp
 
 if __name__ == '__main__':
