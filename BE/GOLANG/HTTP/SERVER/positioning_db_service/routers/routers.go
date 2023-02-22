@@ -1,6 +1,10 @@
 package routers
 
-import "github.com/gin-gonic/gin"
+import (
+	"example.com/db_service/service/booking"
+	"example.com/db_service/service/driver"
+	"github.com/gin-gonic/gin"
+)
 
 // InitRouter initialize routing information
 func InitRouters() *gin.Engine {
@@ -8,5 +12,7 @@ func InitRouters() *gin.Engine {
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
 
-	r.POST("/driver")
+	r.POST("/driver", driver.GetDriverGPS)
+	r.POST("/booking", booking.GetBookingGPS)
+	return r
 }

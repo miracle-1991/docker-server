@@ -4,7 +4,11 @@ go 1.18
 
 require (
 	github.com/gin-gonic/gin v1.8.2
-	github.com/go-ini/ini v1.67.0
+	github.com/prestodb/presto-go-client v0.0.0-20220921130148-c3f935ff1cf9
+	gitlab.myteksi.net/xiaolong.ji/dax-re-queue-metric v0.0.0-20230110060925-c2af6f45d4f5
+	gopkg.in/yaml.v3 v3.0.1
+	gorm.io/driver/mysql v1.4.7
+	gorm.io/gorm v1.24.5
 )
 
 require (
@@ -12,7 +16,12 @@ require (
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
 	github.com/go-playground/validator/v10 v10.11.2 // indirect
+	github.com/go-sql-driver/mysql v1.7.0 // indirect
 	github.com/goccy/go-json v0.10.0 // indirect
+	github.com/hashicorp/go-uuid v1.0.2 // indirect
+	github.com/jcmturner/gofork v1.0.0 // indirect
+	github.com/jinzhu/inflection v1.0.0 // indirect
+	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/kr/text v0.2.0 // indirect
 	github.com/leodido/go-urn v1.2.1 // indirect
@@ -26,5 +35,9 @@ require (
 	golang.org/x/sys v0.5.0 // indirect
 	golang.org/x/text v0.7.0 // indirect
 	google.golang.org/protobuf v1.28.1 // indirect
+	gopkg.in/jcmturner/aescts.v1 v1.0.1 // indirect
+	gopkg.in/jcmturner/dnsutils.v1 v1.0.1 // indirect
+	gopkg.in/jcmturner/gokrb5.v6 v6.1.1 // indirect
+	gopkg.in/jcmturner/rpc.v1 v1.1.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )

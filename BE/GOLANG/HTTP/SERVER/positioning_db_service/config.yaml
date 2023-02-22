@@ -1,0 +1,10 @@
+presto:
+  username: xiaolong.ji
+  password: Jxl@20220103
+  host: porta.data-engineering.myteksi.net
+  port: 443
+  catlog: hive
+  schema: grab_datastore
+googleapi:
+  key: AIzaSyAY-HsXXPsBUqsbQLDFO8kpNWLANwH0E7k
+  nearbyRadius: 100

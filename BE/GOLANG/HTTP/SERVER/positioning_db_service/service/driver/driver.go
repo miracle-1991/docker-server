@@ -1,68 +1,75 @@
 package driver
 
 import (
+	"example.com/db_service/module/DBSampled516"
+	"example.com/db_service/pkg/gpsTemplate"
+	"example.com/db_service/pkg/timeformat"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"log"
 	"strconv"
+	"strings"
 	"time"
 )
 
-const timeFormat = "2006-01-02 15:04:05"
-
-func getYear(timestr string) (string, error) {
-	t, e := time.Parse(timeFormat, timestr)
-	if e != nil {
-		gin.Logger()
-	}
-}
-
 func GetDriverGPS(c *gin.Context) {
-	driverid := c.PostForm("id")
-	starttime := c.PostForm("starttime")
-	endtime := c.PostForm("endtime")
+	_ = c.Request.ParseForm()
+	log.Println(c.Request.PostForm)
 
-	id, err := strconv.ParseInt(driverID, 10, 64)
+	driverid := c.PostForm("driverid")
+	id, err := strconv.ParseInt(driverid, 10, 64)
 	if err != nil {
-		log.Fatal(err)
-	}
-	if len(year) < 4 {
-		log.Printf("year should be like 2021、2022....")
+		errmsg := fmt.Sprintf("failed to parse the driverid:%v, error:%v\n", driverid, err.Error())
+		log.Printf(errmsg)
+		c.JSON(400, gin.H{
+			"error": errmsg,
+		})
 		return
 	}
-	if len(month) < 2 {
-		log.Printf("year should be like 01、02....")
+
+	timestr := c.PostForm("time")
+	objTime, err := timeformat.Parsetime(timestr)
+	if err != nil {
+		log.Printf(err.Error())
+		c.JSON(400, gin.H{
+			"error": err.Error(),
+		})
 		return
 	}
-	if len(day) < 2 {
-		log.Printf("day should be like 01、02....")
+
+	forward := c.PostForm("forward")
+	iBefore, err := strconv.Atoi(forward)
+	if err != nil {
+		errmsg := fmt.Sprintf("failed to parse the forward:%v, error:%v\n", forward, err.Error())
+		log.Printf(errmsg)
+		c.JSON(400, gin.H{
+			"error": errmsg,
+		})
 		return
 	}
-	if len(hour) < 2 {
-		log.Printf("day should be like 09、15....")
+
+	backward := c.PostForm("backward")
+	iAfter, err := strconv.Atoi(backward)
+	if err != nil {
+		errmsg := fmt.Sprintf("failed to parse the backward:%v, error:%v\n", backward, err.Error())
+		log.Printf(errmsg)
+		c.JSON(400, gin.H{
+			"error": errmsg,
+		})
 		return
 	}
-	if minute != "" && len(minute) < 2 {
-		log.Printf("minute must be like 00、01、60")
+
+	outputpath := c.PostForm("outputpath")
+	if len(outputpath) == 0 {
+		errmsg := fmt.Sprintf("you must set output path\n")
+		log.Printf(errmsg)
+		c.JSON(400, gin.H{
+			"error": errmsg,
+		})
 		return
 	}
+
 	var records []DBSampled516.GpsPingSimpled516
-
-	objTimeStr := year + "-" + month + "-" + day + " " + hour + ":" + minute + ":00"
-	objTime, err := time.Parse(timeFormat, objTimeStr)
-	if err != nil {
-		log.Printf("failed to parse time:%v", objTimeStr)
-		return
-	}
-	iBefore, err := strconv.Atoi(intervalBefore)
-	if err != nil {
-		log.Printf("failed to parse the interval:%v", intervalBefore)
-		return
-	}
-	iAfter, err := strconv.Atoi(intervalAfter)
-	if err != nil {
-		log.Printf("failed to parse the interval:%v", intervalAfter)
-		return
-	}
 	startTime := objTime.Add(-1 * time.Duration(iBefore) * time.Minute)
 	endTime := objTime.Add(time.Duration(iAfter) * time.Minute)
 	log.Printf("start pulling data, startTime: %s, endTime: %s ......\n", startTime.String(), endTime.String())
@@ -72,27 +79,54 @@ func GetDriverGPS(c *gin.Context) {
 		log.Printf("get nothing from db\n")
 		return
 	}
-	var fileName string
-	if minute == "" {
-		fileName = driverID + "-" + year + month + day + hour
-	} else {
-		fileName = driverID + "-" + year + month + day + hour + minute
+	if outputpath[len(outputpath)-1] == '/' {
+		outputpath = strings.TrimRight(outputpath, "/")
 	}
-	err = gpsTemplate.InitTempalte()
+	fileName := driverid + "-" + strings.Replace(strings.Replace(timestr, " ", "-", -1), ":", "-", -1)
+	err = gpsTemplate.InitTempalte(outputpath)
 	if err != nil {
-		log.Printf("failed to init template")
+		errmsg := fmt.Sprintf("failed to init template, error:%v\n", err.Error())
+		log.Printf(errmsg)
+		c.JSON(500, gin.H{
+			"error": errmsg,
+		})
 		return
 	}
-	err = gpsTemplate.TemplateRawGpsToHtml(fileName, records, time.Time{}, time.Time{})
+
+	rawHtmlFile, err := gpsTemplate.TemplateRawGpsToHtml(fileName, records, time.Time{}, time.Time{})
 	if err != nil {
-		log.Fatal(err)
+		errmsg := fmt.Sprintf("failed to template raw html for %v, error:%v\n", fileName, err.Error())
+		log.Printf(errmsg)
+		c.JSON(500, gin.H{
+			"error": errmsg,
+		})
+		return
 	}
-	err = gpsTemplate.TemplateSnapedGpsToHtml(fileName, records, time.Time{}, time.Time{})
+
+	snapHtmlFile, err := gpsTemplate.TemplateSnapedGpsToHtml(fileName, records, time.Time{}, time.Time{})
 	if err != nil {
-		log.Fatal(err)
+		errmsg := fmt.Sprintf("failed to template snap html for %v, error:%v\n", fileName, err.Error())
+		log.Printf(errmsg)
+		c.JSON(500, gin.H{
+			"error": errmsg,
+		})
+		return
 	}
-	err = gpsTemplate.WriteToCsv(fileName, records)
+	gpscsvfile, err := gpsTemplate.WriteToCsv(fileName, records)
 	if err != nil {
-		log.Fatal(err)
+		errmsg := fmt.Sprintf("failed to template gps csv for %v, error:%v\n", fileName, err.Error())
+		log.Printf(errmsg)
+		c.JSON(500, gin.H{
+			"error": errmsg,
+		})
+		return
 	}
+
+	c.JSON(200, gin.H{
+		"error":                    "",
+		"TrajectoryOfOriginalGps":  rawHtmlFile,
+		"TrajectoryOfProcessedGps": snapHtmlFile,
+		"DriverOriginalGpsInCSV":   gpscsvfile,
+	})
+	return
 }
