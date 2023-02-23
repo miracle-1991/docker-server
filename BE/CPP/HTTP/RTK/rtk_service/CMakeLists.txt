@@ -19,6 +19,7 @@ endif ()
 
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
+SET(CMAKE_BUILD_TYPE "Debug")
 add_executable(${PROJECT_NAME} main.cc)
 
 # ##############################################################################

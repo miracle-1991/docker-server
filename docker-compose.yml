@@ -1,0 +1,30 @@
+version: '3'
+services:
+  positioning-python-server:
+    build: 
+      context: ./BE/PYTHON/HTTP/HTTPServer
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - ~/.aws:/root/.aws
+      - ~/Downloads/positioning-data:/data
+    command: /opt/conda/bin/python /home/server.py
+  positioning-cpp-server:
+    build:
+      context: ./BE/CPP/HTTP/RTK/rtk_service
+      dockerfile: Dockerfile
+    ports:
+      - "8001:8001"
+    volumes:
+      - ~/Downloads/positioning-data:/data
+    command: /home/rtk_service
+  positioning-go-server:
+    build:
+      context: ./BE/GOLANG/HTTP/SERVER/positioning_db_service
+      dockerfile: Dockerfile
+    ports:
+      - "8002:8002"
+    volumes:
+      - ~/Downloads/positioning-data:/data
+    command: /home/db_service

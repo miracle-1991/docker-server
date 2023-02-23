@@ -6,6 +6,7 @@
 #define RTK_SERVICE_RTKRUNARG_H
 #include <string_view>
 #include <json/json.h>
+#include <memory>
 
 class RTKRunArg {
 public:

@@ -5,6 +5,7 @@
 #include "common.h"
 #include <fstream>
 #include <iostream>
+#include <iomanip>
 #include "json/json.h"
 
 using std::ofstream;
@@ -142,7 +143,7 @@ obs_t* Reader::ReadObsDataFromJson(std::string jsonFilePath) {
     dst->flag = 0;
     dst->rcvcount = 0;
     dst->tmcount = 0;
-    dst->data = new obsd_t[dst->n]{0};
+    dst->data = new obsd_t[dst->n];
     for (int i = 0; i < dst->n; i++) {
         dst->data[i] = obsDataList[i];
     }
@@ -154,6 +155,26 @@ nav_t* Reader::ReadNavDataFromRinex(string filepath) {
     sta_t* sta = new sta_t ;
     nav_t* nav = new nav_t ;
     obs_t* obs = new obs_t ;
+
+    memset(nav, 0,sizeof(nav_t));
+    if (!(nav->eph =(eph_t  *)malloc(sizeof(eph_t )*MAXSAT*4 ))||
+        !(nav->geph=(geph_t *)malloc(sizeof(geph_t)*NSATGLO*2))||
+        !(nav->seph=(seph_t *)malloc(sizeof(seph_t)*NSATSBS*2))) {
+        tracet(1,"initGlobalNav: malloc error\n");
+        return nullptr;
+    }
+
+    for (int i=0;i<MAXSAT*4 ;i++) nav->eph [i]={0,-1,-1};
+    for (int i=0;i<NSATGLO*2;i++) nav->geph[i]={0,-1};
+    for (int i=0;i<NSATSBS*2;i++) nav->seph[i]={0};
+    nav->n =MAXSAT *2;
+    nav->ng=NSATGLO*2;
+    nav->ns=NSATSBS*2;
+
+    for (int i=0;i<MAXSAT*4 ;i++) nav->eph [i].ttr={0};
+    for (int i=0;i<NSATGLO*2;i++) nav->geph[i].tof={0};
+    for (int i=0;i<NSATSBS*2;i++) nav->seph[i].tof={0};
+
     char* opt = "";
     int rcv = 0;
     int stat = ::readrnx(filepath.c_str(), rcv, opt, obs, nav, sta);
