@@ -24,7 +24,7 @@ services:
       context: ./BE/GOLANG/HTTP/SERVER/positioning_db_service
       dockerfile: Dockerfile
     ports:
-      - "8002:8002"
+      - "8003:8003"
     volumes:
       - ~/Downloads/positioning-data:/data
     command: /home/db_service
