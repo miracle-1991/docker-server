@@ -20,6 +20,7 @@ type BookingInfo struct {
 func GetBookingGPS(c *gin.Context) {
 	booking := &BookingInfo{}
 	err := c.ShouldBind(booking)
+	log.Printf("%v", booking)
 	if err != nil {
 		errmsg := fmt.Sprintf("failed to parse, error:%v\n", err.Error())
 		log.Printf(errmsg)

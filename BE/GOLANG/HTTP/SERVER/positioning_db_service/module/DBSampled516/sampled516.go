@@ -1,6 +1,7 @@
 package DBSampled516
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"sort"
@@ -131,22 +132,23 @@ func getSql(startTime, endTime time.Time, driverId int64) []string {
 	return whereSQL
 }
 
-func getDasGpsInMinuteInRangeOnce(sqltext string) (pos []GpsPingSimpled516) {
+func getDasGpsInMinuteInRangeOnce(sqltext string) (pos []GpsPingSimpled516, err error) {
 	defer func() {
 		if err := recover(); err != nil {
 			log.Printf("getOnce error:%v\n", err)
 			pos = make([]GpsPingSimpled516, 0)
+			err = errors.New("JumpCloud authentication error, please check your JumpCloud username and password")
 		}
 	}()
 	rows, err := db.Raw(sqltext).Rows()
 	defer rows.Close()
 	if err == gorm.ErrRecordNotFound {
 		log.Println("find nothing")
-		return pos
+		return pos, err
 	}
 	if err != nil {
 		log.Printf("query error:%v\n", err.Error())
-		return pos
+		return pos, err
 	}
 
 	for rows.Next() {
@@ -155,10 +157,10 @@ func getDasGpsInMinuteInRangeOnce(sqltext string) (pos []GpsPingSimpled516) {
 			&p.StaleDuration, &p.Speed, &p.Timestamp, &p.Filter, &p.Hour, &p.Minute)
 		pos = append(pos, p)
 	}
-	return pos
+	return pos, nil
 }
 
-func GetDasGpsInMinuteInRange(driverid int64, startTime, endTime time.Time) []GpsPingSimpled516 {
+func GetDasGpsInMinuteInRange(driverid int64, startTime, endTime time.Time) ([]GpsPingSimpled516, error) {
 	defer func() {
 		if err := recover(); err != nil {
 			log.Printf("GetDasGpsInMinuteInRange error:%v\n", err)
@@ -168,13 +170,17 @@ func GetDasGpsInMinuteInRange(driverid int64, startTime, endTime time.Time) []Gp
 	var pos []GpsPingSimpled516
 	sqlText := getSql(startTime, endTime, driverid)
 	for i := 0; i < len(sqlText); i++ {
-		tmpPos := getDasGpsInMinuteInRangeOnce(sqlText[i])
-		if len(tmpPos) > 0 {
-			pos = append(pos, tmpPos...)
+		tmpPos, err := getDasGpsInMinuteInRangeOnce(sqlText[i])
+		if err != nil {
+			return nil, err
+		} else {
+			if len(tmpPos) > 0 {
+				pos = append(pos, tmpPos...)
+			}
 		}
 	}
 
-	return pos
+	return pos, nil
 }
 
 //GetGpsOfOneDay 获取某个司机在某一天内所有的gps

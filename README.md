@@ -100,3 +100,11 @@ POST http://localhost:8000/parsertkroadtest
 ```
 
 可以通过![postman-positioning-team](https://app.getpostman.com/join-team?invite_code=968295ea841ef2eddcaf05745cc8df53&target_code=9427bed32b75750ca6aa7e5aecbb820f)加入到positioning-team组织中，该组织内已经写好了各种请求
+
+也可以通过以下命令启动一个前端:
+```
+cd FE/react/positioning-tool
+npm install
+npm start
+```
+该命令会自动打开一个前端页面

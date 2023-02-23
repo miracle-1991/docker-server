@@ -23,7 +23,8 @@ type DriverInfo struct {
 func GetDriverGPS(c *gin.Context) {
 	dax := &DriverInfo{}
 	err := c.ShouldBind(dax)
-	if err != nil {
+	log.Printf("%v", dax)
+	if err != nil || dax.DriverId == 0 {
 		errmsg := fmt.Sprintf("failed to parse, error:%v\n", err.Error())
 		log.Printf(errmsg)
 		c.JSON(400, gin.H{
@@ -57,9 +58,21 @@ func GetDriverGPS(c *gin.Context) {
 	endTime := objTime.Add(time.Duration(dax.Backward) * time.Minute)
 	log.Printf("start pulling data, startTime: %s, endTime: %s ......\n", startTime.String(), endTime.String())
 	log.Printf("start pulling data, startTime: %v, endTime: %v ......\n", startTime.Unix(), endTime.Unix())
-	records = DBSampled516.GetDasGpsInMinuteInRange(dax.DriverId, startTime, endTime)
+	records, err = DBSampled516.GetDasGpsInMinuteInRange(dax.DriverId, startTime, endTime)
+	if err != nil {
+		log.Printf(err.Error())
+		c.JSON(400, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
 	if len(records) == 0 {
-		log.Printf("get nothing from db\n")
+		errmsg := fmt.Sprintf("get nothing from db")
+		log.Printf(errmsg)
+		c.JSON(500, gin.H{
+			"error": errmsg,
+		})
 		return
 	}
 	if outputpath[len(outputpath)-1] == '/' {
@@ -68,7 +81,7 @@ func GetDriverGPS(c *gin.Context) {
 	fileName := strconv.Itoa(int(driverid)) + "-" + strings.Replace(strings.Replace(dax.Time, " ", "-", -1), ":", "-", -1)
 	err = gpsTemplate.InitTempalte(outputpath)
 	if err != nil {
-		errmsg := fmt.Sprintf("failed to init template, error:%v\n", err.Error())
+		errmsg := fmt.Sprintf("failed to init template, error:%v", err.Error())
 		log.Printf(errmsg)
 		c.JSON(500, gin.H{
 			"error": errmsg,
