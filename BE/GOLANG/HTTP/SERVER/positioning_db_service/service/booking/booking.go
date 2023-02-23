@@ -11,9 +11,25 @@ import (
 	"time"
 )
 
+type BookingInfo struct {
+	BookingCode string `json:"bookingcode"`
+	Time        string `json:"time"`
+	OutputPath  string `json:"outputpath"`
+}
+
 func GetBookingGPS(c *gin.Context) {
-	timestr := c.PostForm("time")
-	obgTime, err := timeformat.ParseDate(timestr)
+	booking := &BookingInfo{}
+	err := c.ShouldBind(booking)
+	if err != nil {
+		errmsg := fmt.Sprintf("failed to parse, error:%v\n", err.Error())
+		log.Printf(errmsg)
+		c.JSON(400, gin.H{
+			"error": errmsg,
+		})
+		return
+	}
+
+	objTime, err := timeformat.ParseDate(booking.Time)
 	if err != nil {
 		log.Printf(err.Error())
 		c.JSON(400, gin.H{
@@ -22,22 +38,22 @@ func GetBookingGPS(c *gin.Context) {
 		return
 	}
 
-	bookingcode := c.PostForm("bookingcode")
-	records := DBSampled516.GetGpsOfOneBook(bookingcode, obgTime)
+	records := DBSampled516.GetGpsOfOneBook(booking.BookingCode, objTime)
 	if len(records) == 0 {
-		errmsg := fmt.Sprintf("get nothing for %v at %v\n", bookingcode, timestr)
+		errmsg := fmt.Sprintf("get nothing for %v at %v\n", booking.BookingCode, booking.Time)
 		c.JSON(400, gin.H{
 			"error": errmsg,
 		})
 		return
 	}
 
-	outputpath := c.PostForm("outputpath")
+	outputpath := booking.OutputPath
 	if outputpath[len(outputpath)-1] == '/' {
 		outputpath = strings.TrimRight(outputpath, "/")
 	}
+
 	var fileName string
-	fileName = bookingcode + "-" + strings.Replace(strings.Replace(timestr, " ", "-", -1), ":", "-", -1)
+	fileName = booking.BookingCode + "-" + strings.Replace(strings.Replace(booking.Time, " ", "-", -1), ":", "-", -1)
 	err = gpsTemplate.InitTempalte(outputpath)
 	if err != nil {
 		errmsg := fmt.Sprintf("failed to init template, error:%v\n", err.Error())
