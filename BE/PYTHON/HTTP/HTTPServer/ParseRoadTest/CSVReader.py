@@ -24,6 +24,8 @@ class STGRTKCSVReader:
         row = self.rowMap.get(int(timestamp))
         if row is None:
             return None, None
+        if row["lat"] == "" or row["lon"] == "":
+            return None, None
         return float(row["lat"]), float(row["lon"])
     def getSuccessCount(self):
         count = 0
@@ -95,6 +97,8 @@ class ADRCSVReader:
         row = self.rowMap.get(int(timestamp))
         if row is None:
             return None, None
+        if row["lat"] == "" or row["lon"] == "":
+            return None, None
         return float(row["lat"]), float(row["lon"])
 
     def getTimestampList(self):
@@ -124,6 +128,8 @@ class DongleCSVReader:
     def getLatLonByTimeStamp(self, timestamp):
         row = self.rowMap.get(int(timestamp))
         if row is None:
+            return None, None
+        if row["lat"] == "" or row["lon"] == "":
             return None, None
         return float(row["lat"]), float(row["lon"])
 

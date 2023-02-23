@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: UTF-8 -*-
 from ParseRoadTest.CSVReader import DongleCSVReader
-from ParseRoadTest.OCRReader import JPGReader
+# from ParseRoadTest.OCRReader import JPGReader
 class GroundTruth:
     def __init__(self, gttype, content):
         self.gttype       = gttype
@@ -30,16 +30,16 @@ class GroundTruth:
         reader = DongleCSVReader(filename)
         self.recordMap = reader.getResultMap()
 
-    #解析截图中的经纬度
-    def __parseIMG__(self, imgfile):
-        reader = JPGReader(imgfile)
-        lat, lon = reader.getLatLon()
-        self.recordMap = {
-            0 : {
-                "lat": float(lat),
-                "lon": float(lon)
-            }
-        }
+    # #解析截图中的经纬度
+    # def __parseIMG__(self, imgfile):
+    #     reader = JPGReader(imgfile)
+    #     lat, lon = reader.getLatLon()
+    #     self.recordMap = {
+    #         0 : {
+    #             "lat": float(lat),
+    #             "lon": float(lon)
+    #         }
+    #     }
 
     def getGroundTruthByTimeStamp(self, timestamp):
         if self.gttype == "text":
