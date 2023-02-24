@@ -7,12 +7,15 @@ import SavePath from "./SavePath/SavePath";
 import ReqProvider from "./ReqProvider";
 import Processing from "./Processing/Processing";
 import Stdout from "./Stdout/Stdout";
+import Prefix from "./Prefix";
 
 export default function Search() {
     return (
         <ReqProvider>
             <DateTime></DateTime>
             <SavePath></SavePath>
+            <Prefix></Prefix>
+            <br></br>
             <div className="input-group">
                 <SearchButton></SearchButton>
                 <SearchFilter></SearchFilter>

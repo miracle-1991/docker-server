@@ -202,4 +202,4 @@ if __name__ == '__main__':
     endtimestr = "2023/02/15 08:21:19"
     targetfile = "/Users/xiaolong.ji/Downloads/rtK/20230215/s3-rtkFilter-13770990.log"
     filterlist = ["rtkFilter", "driverID:13770990"]
-    awss3.pull_log_into_file("location-engine/app", starttimestr, endtimestr, targetfile, filterlist)
+    awss3.pull_log_into_file("location-vendor/app", starttimestr, endtimestr, targetfile, filterlist)

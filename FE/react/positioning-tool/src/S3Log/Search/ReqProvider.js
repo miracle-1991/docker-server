@@ -10,6 +10,7 @@ export default function ReqProvider({children}) {
         starttime: "2023-02-15 07:54:10",
         endtime: "2023-02-15 08:21:19",
         filter: ["rtkFilter","driverID:13773457"],
+        prefix: "location-engine",
         outputpath: "/data"
     });
 
@@ -83,6 +84,15 @@ export default function ReqProvider({children}) {
         })
         console.log("onEndTimeChange: " + filterliststr + "   " + JSON.stringify(req))
     }
+
+    const onPrefixChange = tstr => {
+        setReq({
+            ...req,
+            prefix: tstr
+        })
+        console.log("onPrefixChange: " + tstr + "  " + JSON.stringify(req))
+    }
+
     const onOutputPathChange = pathStr => {
         setReq({
             ...req,
@@ -92,7 +102,7 @@ export default function ReqProvider({children}) {
     }
     return (
         <ReqContext.Provider value={{
-            req, onStartTimeChange, onEndTimeChange, onfilterChange, onOutputPathChange,
+            req, onStartTimeChange, onEndTimeChange, onfilterChange,onPrefixChange, onOutputPathChange,
             uri, setUri, data, setData, error, setError, loading, setLoading,
             onDataSuccess, onDataLoading, onDataError, processingState
         }}>

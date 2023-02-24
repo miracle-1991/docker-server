@@ -41,6 +41,7 @@ def downloadLogFromS3():
     endtimestr   = request.json["endtime"]
     targetpath   = request.json["outputpath"]
     filterlist   = request.json["filter"]
+    appname      = request.json["prefix"]
     flist = []
     for filterstr in filterlist:
         f = lambda x : x.find(filterstr) != -1
@@ -49,7 +50,7 @@ def downloadLogFromS3():
     targetfile = targetpath + "/" + outfilename
     targetfile = targetfile.replace(" ", "").replace("\n", "")
     try:
-        awss3.pull_log_into_file("location-engine/app", starttimestr, endtimestr, targetfile, filterlist)
+        awss3.pull_log_into_file(appname + "/app", starttimestr, endtimestr, targetfile, filterlist)
     except Exception as e:
         print(e)
         resp = {
