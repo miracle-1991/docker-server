@@ -6,6 +6,7 @@ import reportWebVitals from './reportWebVitals';
 import { BrowserRouter as Router } from 'react-router-dom'
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
+console.log("IP: ",process.env.REACT_APP_LOCALHOST)
 root.render(
   <Router>
     <App />

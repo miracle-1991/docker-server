@@ -7,14 +7,14 @@ export const useReq = () => useContext(ReqContext);
 //整个search组件都将是该组件的子组件
 export default function ReqProvider({children}) {
     const [req, setReq] = useState({
-        filepath: "/data/result/forestrouteloop1/Note20Ultra",
+        filepath: "/data/20230215/result/forestrouteloop1/Note20Ultra",
         filename: "rtkFilter-driverID-13770990-adr.csv",
         latitude_column_name: "lat",
         longitude_column_name: "lon",
         timestamp_column_name: "timestamp"
     });
 
-    const [snapuri, setSnapUri] = useState("http://localhost:8000/snap")
+    const [snapuri, setSnapUri] = useState("http://" + process.env.REACT_APP_LOCALHOST + ":8000/snap")
     const [snapData, setSnapData] = useState();
     const [error, setError] = useState();
     const [snaploading, setSnapLoading] = useState(true);

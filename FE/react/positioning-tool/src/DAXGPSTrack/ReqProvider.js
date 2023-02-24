@@ -14,7 +14,7 @@ export default function ReqProvider({children}) {
         outputpath: "/data"
     });
 
-    const [uri, setUri] = useState("http://localhost:8003/driver")
+    const [uri, setUri] = useState("http://" + process.env.REACT_APP_LOCALHOST + ":8003/driver")
     const [data, setData] = useState();
     const [error, setError] = useState();
     const [loading, setLoading] = useState(true);

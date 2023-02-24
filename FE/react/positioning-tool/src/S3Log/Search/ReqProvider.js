@@ -13,7 +13,7 @@ export default function ReqProvider({children}) {
         outputpath: "/data"
     });
 
-    const [uri, setUri] = useState("http://localhost:8000/downlog")
+    const [uri, setUri] = useState("http://" + process.env.REACT_APP_LOCALHOST + ":8000/downlog")
     const [data, setData] = useState();
     const [error, setError] = useState();
     const [loading, setLoading] = useState(true);
@@ -32,7 +32,7 @@ export default function ReqProvider({children}) {
             if (curprocessingState >= 1 || reqCnt === 300) {
                 clearInterval(timerId)
             }
-            fetch("http://localhost:8000/downlogProcessing")
+            fetch("http://" + process.env.REACT_APP_LOCALHOST +":8000/downlogProcessing")
                 .then(rsp => rsp.json())
                 .then(rsp => {
                     curprocessingState = rsp.processing

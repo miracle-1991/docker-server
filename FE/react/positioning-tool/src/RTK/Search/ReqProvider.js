@@ -29,7 +29,7 @@ export default function ReqProvider({children}) {
     const navsyslist = [{name: "gps"},{name: "gal"},{name: "glo"},{name:"cmp"}]
     const [pmodeCheckState, setPmodeCheckState] = useState(new Array(pmodelist.length).fill(false));
     const [navsysCheckState, setNavSysCheckState] = useState(new Array(navsyslist.length).fill(false));
-    const [rtkuri, setRtkUri] = useState("http://localhost:8001/DEMO5/RTK/demo5")
+    const [rtkuri, setRtkUri] = useState("http://" + process.env.REACT_APP_LOCALHOST + ":8001/DEMO5/RTK/demo5")
     const [rtkData, setRtkData] = useState();
     const [error, setError] = useState();
     const [rtkloading, setRtkLoading] = useState(true);
@@ -82,7 +82,7 @@ export default function ReqProvider({children}) {
             if (curprocessingState >= 1 || reqCnt === 100) {
                 clearInterval(timerId)
             }
-            fetch("http://localhost:8001/DEMO5/RTK/rtkProcessing")
+            fetch("http://10.28.148.62:8001/DEMO5/RTK/rtkProcessing")
                 .then(rsp => rsp.json())
                 .then(rsp => {
                     curprocessingState = rsp.processing

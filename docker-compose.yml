@@ -1,5 +1,12 @@
 version: '3'
 services:
+  positioning-fe-server:
+    build:
+      context: ./FE/react/positioning-tool
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    command: npm start
   positioning-python-server:
     build: 
       context: ./BE/PYTHON/HTTP/HTTPServer
