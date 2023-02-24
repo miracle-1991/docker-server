@@ -7,7 +7,7 @@ export default function Stdout() {
         <>
             <div className="panel">
                 <div className="panel-heading">
-                    执行结果
+                    RUNNING LOG
                 </div>
                 <div className="panel-body">
                     <pre>{JSON.stringify(data, null, 2)}</pre>
