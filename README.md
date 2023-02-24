@@ -1,5 +1,5 @@
 # RTK离线测试工具
-
+![struct](./docs/img/DockerPositioningTool.png)
 ## 修改配置
 
 ### 1、PYTHON
