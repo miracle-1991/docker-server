@@ -5,6 +5,9 @@
 ### GO
 修改[config.yaml](./BE/GOLANG/HTTP/SERVER/positioning_db_service/config.yaml)中presto的用户名和密码，用于访问presto
 
+### FE
+修改[.env](./FE/react//positioning-tool/.env)中的REACT_APP_LOCALHOST，改成自己本机的地址
+
 ### 在下载目录下创建文件夹 positioning-data,将离线测试文件放到其中
 
 ## 启动:
@@ -99,12 +102,24 @@ POST http://localhost:8000/parsertkroadtest
 }
 ```
 
-可以通过![postman-positioning-team](https://app.getpostman.com/join-team?invite_code=968295ea841ef2eddcaf05745cc8df53&target_code=9427bed32b75750ca6aa7e5aecbb820f)加入到positioning-team组织中，该组织内已经写好了各种请求
+可以通过[postman-positioning-team](https://app.getpostman.com/join-team?invite_code=968295ea841ef2eddcaf05745cc8df53&target_code=9427bed32b75750ca6aa7e5aecbb820f)加入到positioning-team组织中，该组织内已经写好了各种请求
 
-也可以通过以下命令启动一个前端:
-```
-cd FE/react/positioning-tool
-npm install
-npm start
-```
-该命令会自动打开一个前端页面
+### 下载Log (chrome)
+在浏览器上打开http://localhost:3000
+![s3log](./docs/img/s3log.png)
+
+### 请求司机的GPS轨迹
+在浏览器上打开http://localhost:3000
+![daxgps](./docs/img/daxgps.png)
+
+### 请求订单的GPS轨迹
+在浏览器上打开http://localhost:3000
+![bookinggps](./docs/img/bookinggps.png)
+
+### Snap To road
+在浏览器上打开http://localhost:3000
+![snap](./docs/img/snap.png)
+
+### OFFLINE RTK
+在浏览器上打开http://localhost:3000
+![rtk](./docs/img/rtk.png)
