@@ -1,5 +1,8 @@
 # Airport Server
-The project library can update the nearest flight to the database and list the flights in the database on request.  
+The project library can update the nearest flight to the database and list the flights in the database on request.
+
+Before start, you must change the [config](./cmd/config.yaml)
+
 ## Update Flights:
 * Send a GET request to http://localhost:8006/update/:{country}
   * such as requesting to update the flight data of Singapore: http://localhost:8006/update/SG
