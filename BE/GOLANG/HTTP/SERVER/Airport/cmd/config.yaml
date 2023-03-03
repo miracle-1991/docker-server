@@ -1,8 +1,10 @@
 airlabs:
+  #you must register your account on https://airlabs.co/ and copy the api_key here
   api_key: "f35949b6-84a1-4e7c-9c97-faa4b74976bd"
 database:
   type: mysql
   user: root
   password: root123456
   host: 127.0.0.1:3306
+  # database name
   name: grab_datastore
