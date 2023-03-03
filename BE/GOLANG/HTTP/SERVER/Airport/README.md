@@ -6,8 +6,15 @@ Before start, you must change the [config](./cmd/config.yaml)
 ## Update Flights:
 * Send a GET request to http://localhost:8006/update/:{country}
   * such as requesting to update the flight data of Singapore: http://localhost:8006/update/SG
+  ```
+  curl -v -X GET http://localhost:8006/update/SG
+  ```
 ## Get Flights:
 * Send a post request to http://localhost:8006/get, the request body is:
+```
+curl -v -X POST -H "Content-Type: application/json" -d '{"country_code": "SG", "arr_date": "2023-03-03", "dep_date": "2023-03-03", "output_path": "/data"}' http://localhost:8006/get 
+```
+post body:
 ```
 {
   "country_code": "SG",
@@ -39,3 +46,5 @@ if you meet error:
 Host '' is not allowed to connect to this MySQL server
 ```
 you can try this solution: [create root](./airport-service/module/airports/sql/create-root.sql)
+
+
