@@ -20,5 +20,7 @@ ADD ./cmd/crontabfile /etc/cron.d/update-cron
 RUN chmod 0644 /etc/cron.d/update-cron
 RUN crontab /etc/cron.d/update-cron
 
+EXPOSE 8006
+
 # start
 CMD ["sh", "-c", "cron && ./my-flight-service"]

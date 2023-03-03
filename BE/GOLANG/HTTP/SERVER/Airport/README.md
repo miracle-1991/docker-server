@@ -30,7 +30,7 @@ build:
 ```
 docker build -t ff/airport:latest -f Dockerfile .
 ```
-run 
+run (you can run it at docker desktop, it's more convenient)
 ```
 docker run -p 8006:8006 -v ~/Downloads/positioning-data:/data ff/airport:latest
 ```
