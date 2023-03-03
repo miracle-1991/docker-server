@@ -1,0 +1,1 @@
+0 */4 * * * curl http://localhost:8006/update/SG

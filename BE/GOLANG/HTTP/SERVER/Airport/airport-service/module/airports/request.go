@@ -73,12 +73,16 @@ func (h *httpClient) UPDATE(req AirportRequest) ([]Airport, error) {
 	resp, err := http.Get(urlPath)
 	defer resp.Body.Close()
 
-	body, _ := ioutil.ReadAll(resp.Body)
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
 	var res httpResponse
 	err = json.Unmarshal(body, &res)
 	if err != nil {
 		return nil, err
 	}
+	fmt.Printf("response:%v\n", res)
 	airports := res.Response
 	for _, a := range airports {
 		var exist bool

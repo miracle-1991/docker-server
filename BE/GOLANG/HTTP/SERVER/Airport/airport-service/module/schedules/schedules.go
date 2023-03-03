@@ -140,6 +140,30 @@ func ExistScheduleByDepIcao(dep_icao string) (bool, error) {
 	return false, nil
 }
 
+func ExistScheduleByDepDate(dep_date string) (bool, error) {
+	var item Schedule
+	err := common.DB.Select("id").Where("dep_date = ? AND deleted_on = ? ", dep_date, 0).First(&item).Error
+	if err != nil && err != gorm.ErrRecordNotFound {
+		return false, err
+	}
+	if item.ID > 0 {
+		return true, nil
+	}
+	return false, nil
+}
+
+func ExistScheduleByArrDate(arr_date string) (bool, error) {
+	var item Schedule
+	err := common.DB.Select("id").Where("arr_date = ? AND deleted_on = ? ", arr_date, 0).First(&item).Error
+	if err != nil && err != gorm.ErrRecordNotFound {
+		return false, err
+	}
+	if item.ID > 0 {
+		return true, nil
+	}
+	return false, nil
+}
+
 func AddSchedule(schedule Schedule) error {
 	if err := common.DB.Create(&schedule).Error; err != nil {
 		return err

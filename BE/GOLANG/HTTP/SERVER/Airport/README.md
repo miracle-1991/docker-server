@@ -34,3 +34,8 @@ run
 ```
 docker run -p 8006:8006 -v ~/Downloads/positioning-data:/data ff/airport:latest
 ```
+if you meet error:
+```
+Host '' is not allowed to connect to this MySQL server
+```
+you can try this solution: [create root](./airport-service/module/airports/sql/create-root.sql)

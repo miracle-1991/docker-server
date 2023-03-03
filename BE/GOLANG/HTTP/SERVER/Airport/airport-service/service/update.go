@@ -34,6 +34,7 @@ func UpdateSchedule(c *gin.Context) {
 		return
 	}
 	for _, air := range airportlist {
+		log.Printf("update airport %v\n", air.Name)
 		scheduleHttpCLient := schedules.NewScheduleHttpClient(config.GetAirLabConfig().ApiKey)
 		// dep from this airport
 		_, err = scheduleHttpCLient.UPDATE(schedules.ScheduleRequest{

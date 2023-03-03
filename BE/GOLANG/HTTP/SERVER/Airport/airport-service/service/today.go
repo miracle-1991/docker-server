@@ -142,6 +142,8 @@ func GetSchedules(c *gin.Context) {
 		})
 		if err == nil {
 			arrMap[icao] = arrResp
+		} else {
+			log.Printf("%v", err)
 		}
 
 		//departure
@@ -153,6 +155,8 @@ func GetSchedules(c *gin.Context) {
 		})
 		if err == nil {
 			depMap[icao] = depResp
+		} else {
+			log.Printf("%v", err)
 		}
 	}
 

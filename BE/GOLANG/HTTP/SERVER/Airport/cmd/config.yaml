@@ -5,6 +5,6 @@ database:
   type: mysql
   user: root
   password: root123456
-  host: 127.0.0.1:3306
+  host:  10.28.148.84:3306
   # database name
   name: grab_datastore

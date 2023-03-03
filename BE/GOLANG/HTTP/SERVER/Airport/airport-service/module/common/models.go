@@ -26,10 +26,19 @@ func Setup(conf *config.DataBase) {
 		conf.Host,
 		conf.Name))
 	if err != nil {
-		log.Fatal("models setup error: %v", err)
+		log.Fatal("models setup error:", err)
 	}
+	db.Debug()
 	db.SingularTable(true)
 	db.Callback().Create().Replace("gorm:update_time_stamp", updateTimeStampForCreateCallBack)
+	db.Callback().Update().Replace("gorm:update_time_stamp", updateTimeStampForUpdateCallBack)
+	db.Callback().Update().Replace("gorm:delete", deleteCallBack)
+	db.DB().SetMaxIdleConns(10)
+	db.DB().SetMaxOpenConns(100)
+	err = db.DB().Ping()
+	if err != nil {
+		log.Fatal(err)
+	}
 	DB = db
 }
 

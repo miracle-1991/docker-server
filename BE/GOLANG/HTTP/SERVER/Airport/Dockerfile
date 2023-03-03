@@ -1,7 +1,7 @@
-FROM golang:latest
+FROM golang:1.18
 
 #install cron
-RUN apt-get update && apt-get -y install cron
+RUN apt-get update && apt-get -y install cron && apt-get -y install vim
 
 #set workdir
 WORKDIR /app
@@ -16,7 +16,9 @@ WORKDIR /app/cmd
 RUN go build -o my-flight-service
 
 #add cron task
-RUN echo "0 */6 * * * /app/my-flight-service > /dev/null 2>&1" >> /etc/crontab
+ADD ./cmd/crontabfile /etc/cron.d/update-cron
+RUN chmod 0644 /etc/cron.d/update-cron
+RUN crontab /etc/cron.d/update-cron
 
 # start
 CMD ["sh", "-c", "cron && ./my-flight-service"]

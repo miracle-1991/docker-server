@@ -2,6 +2,7 @@ package schedules
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -33,6 +34,22 @@ type scheduleResponse struct {
 func (h *httpClient) GET(req ScheduleRequest) ([]Schedule, error) {
 	maps := make(map[string]interface{})
 	maps["deleted_on"] = 0
+
+	//check if exist
+	if req.ArrDate != "" {
+		exist, err := ExistScheduleByArrDate(req.ArrDate)
+		if err == nil && exist == false {
+			return nil, errors.New("no data")
+		}
+	}
+
+	if req.DepDate != "" {
+		exist, err := ExistScheduleByDepDate(req.DepDate)
+		if err == nil && exist == false {
+			return nil, errors.New("no data")
+		}
+	}
+
 	if req.DepIata != "" {
 		maps["dep_iata"] = req.DepIata
 		maps["dep_date"] = req.DepDate
