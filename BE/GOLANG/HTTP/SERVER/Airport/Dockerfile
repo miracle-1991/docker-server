@@ -8,10 +8,11 @@ WORKDIR /app
 
 #copy go module
 COPY go.mod go.sum ./
-RUN go mod downloads
+RUN go mod download
 
 #copy code
 COPY . .
+WORKDIR /app/cmd
 RUN go build -o my-flight-service
 
 #add cron task

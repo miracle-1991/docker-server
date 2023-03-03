@@ -28,9 +28,9 @@ RUN echo "0 */6 * * * /app/my-flight-service > /dev/null 2>&1" >> /etc/crontab
 ```
 build:
 ```
- docker build -t ff/airport:latest -f Dockerfile .
+docker build -t ff/airport:latest -f Dockerfile .
 ```
 run 
 ```
-docker run -it -p 8006:8006 -v ~/Downloads/positioning-data:/data ff/airport:latest /bin/bash
+docker run -p 8006:8006 -v ~/Downloads/positioning-data:/data ff/airport:latest
 ```
