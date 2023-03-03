@@ -11,9 +11,18 @@ import (
 type AirLabs struct {
 	ApiKey string `yaml:"api_key"`
 }
+type DataBase struct {
+	Type        string `yaml:"type"`
+	User        string `yaml:"user"`
+	Password    string `yaml:"password"`
+	Host        string `yaml:"host"`
+	Name        string `yaml:"name"`
+	TablePrefix string `yaml:"table_prefix"`
+}
 
 type Config struct {
-	AirLabConf AirLabs `yaml:"airlabs"`
+	AirLabConf   AirLabs  `yaml:"airlabs"`
+	DataBaseConf DataBase `yaml:"database"`
 }
 
 var config Config
@@ -40,4 +49,8 @@ func init() {
 
 func GetAirLabConfig() *AirLabs {
 	return &config.AirLabConf
+}
+
+func GetDataBaseConfig() *DataBase {
+	return &config.DataBaseConf
 }

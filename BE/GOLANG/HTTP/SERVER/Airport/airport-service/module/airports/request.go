@@ -9,7 +9,8 @@ import (
 )
 
 type AirportHttpClient interface {
-	GET(AirportRequest) ([]AirportResponse, error)
+	GET(AirportRequest) ([]Airport, error)
+	UPDATE(AirportRequest) ([]Airport, error)
 }
 
 func NewAirportHttpClient(apikey string) AirportHttpClient {
@@ -25,15 +26,35 @@ type httpClient struct {
 }
 
 type httpResponse struct {
-	Response []AirportResponse `json:"response"`
+	Response []Airport `json:"response"`
 }
 
-func (h *httpClient) GET(req AirportRequest) ([]AirportResponse, error) {
+func (h *httpClient) GET(req AirportRequest) ([]Airport, error) {
+	maps := make(map[string]interface{})
+	maps["deleted_on"] = 0
+	if req.IataCode != "" {
+		maps["iata_code"] = req.IataCode
+	} else if req.IcaoCode != "" {
+		maps["icao_code"] = req.IcaoCode
+	} else if req.CityCode != "" {
+		maps["city_code"] = req.CityCode
+	} else if req.CountryCode != "" {
+		maps["country_code"] = req.CountryCode
+	}
+	airports, err := GetAirports(req.PageNum, req.PageSize, maps)
+	if err != nil {
+		return nil, err
+	}
+	return airports, nil
+}
+
+func (h *httpClient) UPDATE(req AirportRequest) ([]Airport, error) {
 	params := url.Values{}
 	Url, err := url.Parse(airportUrl)
 	if err != nil {
 		return nil, err
 	}
+	params.Set("api_key", h.ApiKey)
 	if req.IataCode != "" {
 		params.Set("iata_code", req.IataCode)
 	}
@@ -46,10 +67,9 @@ func (h *httpClient) GET(req AirportRequest) ([]AirportResponse, error) {
 	if req.CountryCode != "" {
 		params.Set("country_code", req.CountryCode)
 	}
-	params.Set("api_key", h.ApiKey)
 	Url.RawQuery = params.Encode()
 	urlPath := Url.String()
-	fmt.Printf("request: %v", urlPath)
+	fmt.Printf("request: %v\n", urlPath)
 	resp, err := http.Get(urlPath)
 	defer resp.Body.Close()
 
@@ -59,5 +79,25 @@ func (h *httpClient) GET(req AirportRequest) ([]AirportResponse, error) {
 	if err != nil {
 		return nil, err
 	}
-	return res.Response, nil
+	airports := res.Response
+	for _, a := range airports {
+		var exist bool
+		if a.IcaoCode != "" {
+			exist, err = ExistAirportByIcaoCode(a.IcaoCode)
+		} else if a.IataCode != "" {
+			exist, err = ExistAirportByIataCode(a.IataCode)
+		} else {
+			continue
+		}
+		if err != nil {
+			return nil, err
+		}
+		if !exist {
+			err = AddAirport(a)
+			if err != nil {
+				return nil, err
+			}
+		}
+	}
+	return airports, nil
 }
