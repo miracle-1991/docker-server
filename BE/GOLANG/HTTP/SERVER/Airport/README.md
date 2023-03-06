@@ -1,7 +1,7 @@
 # Airport Server
 The project library can update the nearest flight to the database and list the flights in the database on request.
 
-Before start, you must change the [config](./cmd/config.yaml)
+If you run it at goland, before start, you must change the [config](./cmd/config.yaml)
 
 ## Update Flights:
 * Send a GET request to http://localhost:8006/update/:{country}
@@ -25,26 +25,17 @@ post body:
   "output_path": "/data" 
 }
 ```
-# Start At Mac
+# Run At Mac
 just open this project in GoLand and run it
 
-# Start At Docker
-it will auto update every 6 hours because of this command in Dockerfile:
+# Run At Docker
+start
 ```
-RUN echo "0 */6 * * * /app/my-flight-service > /dev/null 2>&1" >> /etc/crontab
+docker-compose up -d
 ```
-build:
+stop
 ```
-docker build -t ff/airport:latest -f Dockerfile .
+docker-compose stop
 ```
-run (you can run it at docker desktop, it's more convenient)
-```
-docker run -p 8006:8006 -v ~/Downloads/positioning-data:/data ff/airport:latest
-```
-if you meet error:
-```
-Host '' is not allowed to connect to this MySQL server
-```
-you can try this solution: [create root](./airport-service/module/airports/sql/create-root.sql)
 
 

@@ -71,6 +71,12 @@ func (h *httpClient) GET(req ScheduleRequest) ([]Schedule, error) {
 	if err != nil {
 		return nil, err
 	}
+	if req.ArrIata != "" || req.ArrIcao != "" {
+		//sort and unique
+		return UniqueByArrTime(schedules), nil
+	} else if req.DepIata != "" || req.DepIcao != "" {
+		return UniqueByDepTime(schedules), nil
+	}
 	return schedules, nil
 }
 
@@ -115,10 +121,8 @@ func (h *httpClient) UPDATE(req ScheduleRequest) ([]Schedule, error) {
 	newSchedules := make([]Schedule, 0)
 	for _, s := range schedules {
 		var exist bool
-		if s.FlightIcao != "" {
-			exist, err = ExistScheduleByFlightIcao(s.FlightIcao)
-		} else if s.FlightIata != "" {
-			exist, err = ExistScheduleByFlightIata(s.FlightIata)
+		if s.CSFlightIata != "" {
+			exist, err = ExistScheduleByCSFlightIata(s.CSFlightIata)
 		} else {
 			continue
 		}

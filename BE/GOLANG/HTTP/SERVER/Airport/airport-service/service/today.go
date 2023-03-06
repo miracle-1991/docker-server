@@ -9,6 +9,7 @@ import (
 	"os"
 	"strconv"
 	"xiaolong.ji.com/airport/airport-service/module/airports"
+	"xiaolong.ji.com/airport/airport-service/module/common"
 	"xiaolong.ji.com/airport/airport-service/module/schedules"
 	"xiaolong.ji.com/airport/pkg/config"
 )
@@ -22,32 +23,93 @@ type TodayRequest struct {
 	OutputPath  string `json:"output_path"`
 }
 
+var getCountryCode = func(airportMap map[string]airports.Airport, airportIcalCode string) string {
+	if r, ok := airportMap[airportIcalCode]; ok {
+		return r.CountryCode
+	}
+	return ""
+}
+var getCityName = func(airportMap map[string]airports.Airport, airportIcalCode string) string {
+	if r, ok := airportMap[airportIcalCode]; ok {
+		return r.City
+	}
+	return ""
+}
+var getAirportName = func(airportMap map[string]airports.Airport, airportIcalCode string) string {
+	if r, ok := airportMap[airportIcalCode]; ok {
+		return r.Name
+	}
+	return ""
+}
+
+func writeScheduleRecordsSummaryToCSV(csvfile string, airportMap map[string]airports.Airport, records map[string][]schedules.Schedule, isArrive bool) error {
+	file, err := os.OpenFile(csvfile, os.O_TRUNC|os.O_WRONLY|os.O_CREATE, 0666)
+	if err != nil {
+		log.Printf("open file %v failed", csvfile)
+		return err
+	}
+	defer file.Close()
+
+	var getHourRow = func() []string {
+		h := []string{""}
+		for i := 0; i <= 23; i++ {
+			t := strconv.Itoa(i)
+			if len(t) == 1 {
+				t = "0" + t
+			}
+			h = append(h, t)
+		}
+		return h
+	}
+
+	w := csv.NewWriter(file)
+	header := getHourRow()
+	w.Write(header)
+
+	summary := make(map[string]map[string]int) //[date][hour]count
+	for _, recordsForOneAirport := range records {
+		for _, record := range recordsForOneAirport {
+			date, hour := "", ""
+			if isArrive {
+				date, _ = common.Date(record.ArrTime)
+				hour, _ = common.Hour(record.ArrTime)
+			} else {
+				date, _ = common.Date(record.DepTime)
+				hour, _ = common.Hour(record.DepTime)
+			}
+			if _, ok := summary[date]; !ok {
+				summary[date] = make(map[string]int)
+			}
+			if _, ok := summary[date][hour]; !ok {
+				summary[date][hour] = 0
+			}
+			summary[date][hour] = summary[date][hour] + 1
+		}
+	}
+
+	for date, _ := range summary {
+		row := make([]string, 0)
+		row = append(row, date)
+		for _, hkey := range header {
+			if hkey == "" {
+				continue
+			}
+			countStr := strconv.Itoa(summary[date][hkey])
+			row = append(row, countStr)
+		}
+		w.Write(row)
+	}
+	w.Flush()
+	return nil
+}
+
 func writeScheduleRecordsToCSV(csvfile string, airportMap map[string]airports.Airport, records map[string][]schedules.Schedule, isArrive bool) error {
-	file, err := os.OpenFile(csvfile, os.O_WRONLY|os.O_CREATE, 0666)
+	file, err := os.OpenFile(csvfile, os.O_TRUNC|os.O_WRONLY|os.O_CREATE, 0666)
 	if err != nil {
 		log.Printf("open file failed", err)
 		return err
 	}
 	defer file.Close()
-
-	var getCountryCode = func(airportMap map[string]airports.Airport, airportIcalCode string) string {
-		if r, ok := airportMap[airportIcalCode]; ok {
-			return r.CountryCode
-		}
-		return ""
-	}
-	var getCityName = func(airportMap map[string]airports.Airport, airportIcalCode string) string {
-		if r, ok := airportMap[airportIcalCode]; ok {
-			return r.City
-		}
-		return ""
-	}
-	var getAirportName = func(airportMap map[string]airports.Airport, airportIcalCode string) string {
-		if r, ok := airportMap[airportIcalCode]; ok {
-			return r.Name
-		}
-		return ""
-	}
 
 	w := csv.NewWriter(file)
 	if isArrive {
@@ -177,11 +239,17 @@ func GetSchedules(c *gin.Context) {
 		_ = writeScheduleRecordsToCSV(csvfile1, airportMap, arrMap, true)
 		csvfile2 := outputpath + "/" + r.CountryCode + "-departure-schedules.csv"
 		_ = writeScheduleRecordsToCSV(csvfile2, airportMap, depMap, false)
+		csvfile3 := outputpath + "/" + r.CountryCode + "-arrive-schedules-summary.csv"
+		_ = writeScheduleRecordsSummaryToCSV(csvfile3, airportMap, arrMap, true)
+		csvfile4 := outputpath + "/" + r.CountryCode + "-departure-schedules-summary.csv"
+		_ = writeScheduleRecordsSummaryToCSV(csvfile4, airportMap, depMap, false)
 		c.JSON(200, gin.H{
 			"code": 0,
 			"output": gin.H{
-				"file1": csvfile1,
-				"file2": csvfile2,
+				"arrive_file":            csvfile1,
+				"departure_file":         csvfile2,
+				"arrive_summary_file":    csvfile3,
+				"departure_summary_file": csvfile4,
 			},
 		})
 	}

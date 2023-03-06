@@ -2,6 +2,7 @@ package schedules
 
 import (
 	"github.com/jinzhu/gorm"
+	"sort"
 	"xiaolong.ji.com/airport/airport-service/module/common"
 )
 
@@ -68,69 +69,53 @@ func (a Schedule) TableName() string {
 	return "schedules"
 }
 
-func ExistScheduleByArrIata(arr_iata string) (bool, error) {
-	var item Schedule
-	err := common.DB.Select("id").Where("arr_iata = ? AND deleted_on = ? ", arr_iata, 0).First(&item).Error
-	if err != nil && err != gorm.ErrRecordNotFound {
-		return false, err
+//self def sort func: by arr time
+type ByArrTime []Schedule
+
+func (a ByArrTime) Len() int           { return len(a) }
+func (a ByArrTime) Less(i, j int) bool { return a[i].ArrTimeTs < a[j].ArrTimeTs }
+func (a ByArrTime) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+func UniqueByArrTime(slist []Schedule) []Schedule {
+	m := make(map[string]bool)
+	tempSlist := make([]Schedule, 0)
+	for _, s := range slist {
+		key := s.CSFlightIata + s.ArrTime
+		if m[key] == true {
+			continue
+		} else {
+			m[key] = true
+			tempSlist = append(tempSlist, s)
+		}
 	}
-	if item.ID > 0 {
-		return true, nil
-	}
-	return false, nil
+	sort.Sort(ByArrTime(tempSlist))
+	return tempSlist
 }
 
-func ExistScheduleByArrIcao(arr_icao string) (bool, error) {
-	var item Schedule
-	err := common.DB.Select("id").Where("arr_icao = ? AND deleted_on = ? ", arr_icao, 0).First(&item).Error
-	if err != nil && err != gorm.ErrRecordNotFound {
-		return false, err
+//self def sort func: by dep time
+type ByDepTime []Schedule
+
+func (a ByDepTime) Len() int           { return len(a) }
+func (a ByDepTime) Less(i, j int) bool { return a[i].DepTimeTs < a[j].DepTimeTs }
+func (a ByDepTime) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+func UniqueByDepTime(slist []Schedule) []Schedule {
+	m := make(map[string]bool)
+	tempSlit := make([]Schedule, 0)
+	for _, s := range slist {
+		key := s.CSFlightIata + s.DepTime
+		if m[key] == true {
+			continue
+		} else {
+			m[key] = true
+			tempSlit = append(tempSlit, s)
+		}
 	}
-	if item.ID > 0 {
-		return true, nil
-	}
-	return false, nil
+	sort.Sort(ByDepTime(tempSlit))
+	return tempSlit
 }
 
-func ExistScheduleByFlightIcao(flight_icao string) (bool, error) {
+func ExistScheduleByCSFlightIata(cs_flight_iata string) (bool, error) {
 	var item Schedule
-	err := common.DB.Select("id").Where("flight_icao = ? AND deleted_on = ? ", flight_icao, 0).First(&item).Error
-	if err != nil && err != gorm.ErrRecordNotFound {
-		return false, err
-	}
-	if item.ID > 0 {
-		return true, nil
-	}
-	return false, nil
-}
-
-func ExistScheduleByFlightIata(flight_iata string) (bool, error) {
-	var item Schedule
-	err := common.DB.Select("id").Where("flight_iata = ? AND deleted_on = ? ", flight_iata, 0).First(&item).Error
-	if err != nil && err != gorm.ErrRecordNotFound {
-		return false, err
-	}
-	if item.ID > 0 {
-		return true, nil
-	}
-	return false, nil
-}
-
-func ExistScheduleByDepIata(dep_iata string) (bool, error) {
-	var item Schedule
-	err := common.DB.Select("id").Where("dep_iata = ? AND deleted_on = ? ", dep_iata, 0).First(&item).Error
-	if err != nil && err != gorm.ErrRecordNotFound {
-		return false, err
-	}
-	if item.ID > 0 {
-		return true, nil
-	}
-	return false, nil
-}
-
-func ExistScheduleByDepIcao(dep_icao string) (bool, error) {
-	var item Schedule
-	err := common.DB.Select("id").Where("dep_icao = ? AND deleted_on = ? ", dep_icao, 0).First(&item).Error
+	err := common.DB.Select("id").Where("cs_flight_iata = ? AND deleted_on = ? ", cs_flight_iata, 0).First(&item).Error
 	if err != nil && err != gorm.ErrRecordNotFound {
 		return false, err
 	}
