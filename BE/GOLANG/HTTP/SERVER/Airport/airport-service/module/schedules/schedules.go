@@ -113,9 +113,9 @@ func UniqueByDepTime(slist []Schedule) []Schedule {
 	return tempSlit
 }
 
-func ExistScheduleByCSFlightIata(cs_flight_iata string) (bool, error) {
+func ExistSchedule(flight_iata string, flight_icao string, arr_time_ts, dep_time_ts uint32) (bool, error) {
 	var item Schedule
-	err := common.DB.Select("id").Where("cs_flight_iata = ? AND deleted_on = ? ", cs_flight_iata, 0).First(&item).Error
+	err := common.DB.Select("id").Where("flight_iata = ? AND flight_icao = ? AND arr_time_ts = ? AND dep_time_ts = ? AND deleted_on = ? ", flight_iata, flight_icao, arr_time_ts, dep_time_ts, 0).First(&item).Error
 	if err != nil && err != gorm.ErrRecordNotFound {
 		return false, err
 	}

@@ -121,8 +121,8 @@ func (h *httpClient) UPDATE(req ScheduleRequest) ([]Schedule, error) {
 	newSchedules := make([]Schedule, 0)
 	for _, s := range schedules {
 		var exist bool
-		if s.CSFlightIata != "" {
-			exist, err = ExistScheduleByCSFlightIata(s.CSFlightIata)
+		if s.FlightIata != "" && s.FlightIcao != "" {
+			exist, err = ExistSchedule(s.FlightIata, s.FlightIcao, s.ArrTimeTs, s.DepTimeTs)
 		} else {
 			continue
 		}
