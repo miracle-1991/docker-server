@@ -35,3 +35,56 @@ services:
     volumes:
       - ~/Downloads/positioning-data:/data
     command: /home/db_service
+  db:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_DATABASE: grab_datastore
+      MYSQL_USER: writer
+      MYSQL_PASSWORD: 123456
+    volumes:
+      - /Users/xiaolong.ji/dbdata:/var/lib/mysql
+      - ./BE/GOLANG/HTTP/SERVER/Airport/cmd/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      default:
+        aliases:
+          - db
+    expose:
+      - 3306
+    ports:
+      - target: 3306
+        published: 3306
+        protocol: tcp
+        mode: host
+    command: --bind-address=0.0.0.0
+    healthcheck:
+      test: ["CMD", "mysqladmin","ping","-h","localhost"]
+      timeout: 10s
+      retries: 5
+  airport:
+    build:
+      context: ./BE/GOLANG/HTTP/SERVER/Airport
+      dockerfile: Dockerfile
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ~/Downloads/airport:/data
+    environment:
+      DB_TYPE: mysql
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_USERNAME: writer
+      DB_PASSWORD: 123456
+      DB_NAME: grab_datastore
+    ports:
+      - "8006:8006"
+    networks:
+      default:
+        aliases:
+          - db
+
+networks:
+  default:
+    driver: bridge
