@@ -78,6 +78,13 @@ class AWSS3:
                 return False
         return True
 
+    def __parse_logtime__(self, line):
+        #2023-02-01T09:18:20.603666
+        timestr = str(line[:26])
+        timestr = timestr.replace("T", " ")
+        timelocal = time.strptime(timestr, "%Y-%m-%d %H:%M:%S.%f")
+        return timelocal
+
     #下载某个时间范围内所有的日志文件，并按照过滤器filter过滤出感兴趣的日志，统一输出到targetfile中,过滤器会在日志中的每一行上运行
     #前缀prefix不能包含日期，比如location-engine/app
     #开始时间starttime和结束时间endtime必须是字符串，形式为"%Y/%m/%d %H:%M:%S"
@@ -88,6 +95,7 @@ class AWSS3:
         flist = self.__get_log_files_by_time__(prefix, starttime, endtime)
         self.__setProcessingFileTotalCnt__(len(flist))
         with open(targetfile, "w") as outfile:
+            tslist = []
             for f in flist:
                 print(f)
                 print("download file: " + f["name"])
@@ -98,16 +106,27 @@ class AWSS3:
                 bf = gf.read()
                 s = bytes.decode(bf)
                 sl = s.split("\n")
+
                 if filterlist is None or len(filterlist) == 0:
                     for ts in sl:
-                        outfile.write(ts + "\n")
+                        tslist.append({
+                            "time": self.__parse_logtime__(ts),
+                            "data": ts
+                        })
                 else:
                     for ts in sl:
                         if self.__run_filter_list__(filterlist, ts):
-                            outfile.write(ts + "\n")
+                            tslist.append({
+                                "time": self.__parse_logtime__(ts),
+                                "data": ts
+                            })
                 print("rm file: " + f["name"])
                 os.remove(f["name"])
                 self.__addProcessingFileCnt__()
+            #sort
+            tslist = sorted(tslist, key=lambda x : x["time"])
+            for ts in tslist:
+                outfile.write(ts["data"] + "\n")
         self.__setProcessingEnd__()
 
     def __setProcessingEnd__(self):

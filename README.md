@@ -17,6 +17,7 @@ region = ap-southeast-1
 
 ### 2、GO
 修改[config.yaml](./BE/GOLANG/HTTP/SERVER/positioning_db_service/config.yaml)中presto的用户名和密码，用于访问presto
+当然，如果以docker-compose的方式启动，在docker-compose.yml中以环境变量的方式配置也行
 
 ### 3、FE
 修改[.env](./FE/react//positioning-tool/.env)中的REACT_APP_LOCALHOST，改成自己本机的地址

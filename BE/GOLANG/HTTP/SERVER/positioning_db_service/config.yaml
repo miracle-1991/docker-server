@@ -1,6 +1,6 @@
 presto:
-  username: xiaolong.ji
-  password: xxxx
+  username: your_name
+  password: your_pwd
   host: porta.data-engineering.myteksi.net
   port: 443
   catlog: hive

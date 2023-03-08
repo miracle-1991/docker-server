@@ -39,6 +39,13 @@ services:
       - "8003:8003"
     volumes:
       - ~/Downloads/positioning-data:/data
+    environment:
+      - PRESTO_HOST=porta.data-engineering.myteksi.net
+      - PRESTO_PORT=443
+      - PRESTO_USER=your_name
+      - PRESTO_PWD=your_pwd
+      - PRESTO_CATLOG=hive
+      - PRESTO_SCHEMA=grab_datastore
     command: /home/db_service
   db:
     image: mysql:8.0
