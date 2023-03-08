@@ -37,6 +37,25 @@ docker-compose build positioning-python-server
 ```
 
 ### 3、通过POSTMAN使用该环境
+* 手动更新存储的机场航班数据(docker-compose启动后，会自动每隔4个小时更新SG的数据，只要不断网就能一直更新，但是受限于免费账户，最多向airlabs发起1000次api调用)
+GET http://localhost:8006/update/{country_icao_code}
+```
+比如更新新加坡的数据
+curl http://localhost:8006/update/SG
+```
+
+* 查看机场某一天的数据
+POST http://localhost:8006/get
+```
+{
+    "country_code": "SG",       #要查找的国家
+    "arr_date": "2023-03-07",   #到达机场的航班数据，如果不需要到达的数据，此字段可以不写
+    "dep_date": "2023-03-07",   #离开机场的航班数据，如果不需要离开的数据，此字段可以不写
+    "output_path": "/data"      #输出文件的目录，映射到mac的~/Downloads/positioning-data
+}
+```
+
+
 * 下载Log (postman):
 POST http://localhost:8000/downlog
 ```
