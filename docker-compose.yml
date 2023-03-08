@@ -4,6 +4,7 @@ services:
     build:
       context: ./FE/react/positioning-tool
       dockerfile: Dockerfile
+    restart: always
     ports:
       - "3000:3000"
     command: npm start
@@ -21,6 +22,7 @@ services:
     build:
       context: ./BE/CPP/HTTP/RTK/rtk_service
       dockerfile: Dockerfile
+    restart: always
     ports:
       - "8001:8001"
     volumes:
@@ -30,6 +32,7 @@ services:
     build:
       context: ./BE/GOLANG/HTTP/SERVER/positioning_db_service
       dockerfile: Dockerfile
+    restart: always
     ports:
       - "8003:8003"
     volumes:
@@ -66,6 +69,7 @@ services:
     build:
       context: ./BE/GOLANG/HTTP/SERVER/Airport
       dockerfile: Dockerfile
+    restart: always
     depends_on:
       db:
         condition: service_healthy
