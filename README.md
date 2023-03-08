@@ -23,9 +23,10 @@ region = ap-southeast-1
 
 ### 在下载目录下创建文件夹 positioning-data,将离线测试文件放到其中
 
-## 1、启动:
+## 1、启动/停止:
 ```
-docker-compose up
+docker-compose up -d
+docker-compose stop
 ```
 该命令在第一次执行时会构建所有服务的镜像，然后自动启动这些镜像，后续除非手动构建镜像，否则不会再自动构建这些镜像
 
