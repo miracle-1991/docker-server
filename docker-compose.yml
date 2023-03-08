@@ -17,6 +17,8 @@ services:
     volumes:
       - ~/.aws:/root/.aws
       - ~/Downloads/positioning-data:/data
+    environment:
+      - S3_BUCKET=grabtaxi-logs-prd  #default is grabtaxi-logs-stg
     command: /opt/conda/bin/python /home/server.py
   positioning-cpp-server:
     build:

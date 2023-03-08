@@ -98,7 +98,7 @@ class AWSS3:
                 bf = gf.read()
                 s = bytes.decode(bf)
                 sl = s.split("\n")
-                if filter is None:
+                if filterlist is None or len(filterlist) == 0:
                     for ts in sl:
                         outfile.write(ts + "\n")
                 else:

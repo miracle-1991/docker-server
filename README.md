@@ -40,13 +40,13 @@ docker-compose build positioning-python-server
 POST http://localhost:8000/downlog
 ```
 {
-    "starttime": "2023-02-15 06:17:46",
-    "endtime": "2023-02-15 06:38:33",
+    "starttime": "2023-02-25 05:30:00",  #utc起始时间
+    "endtime": "2023-02-25 05:50:00",    #utc结束时间
     "filter": [
-        "rtkFilter",
-        "driverID:13770990"
+        "474443"                         #要过滤的字段
     ],
-    "outputpath": "/data20230215/result/forestrouteloop1/Note20Ultra"
+    "prefix": "orbital/structuredlog",   #桶的名称，每个业务都有自己的桶，比如ORBITAL的桶 https://s3.console.aws.amazon.com/s3/buckets/grabtaxi-logs-prd?prefix=orbital/&region=ap-southeast-1
+    "outputpath": "/data"                #映射到mac的~/Downloads/positioning-data
 }
 ```
 

@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: UTF-8 -*-
 import json
-
+import os
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 
@@ -19,6 +19,9 @@ CORS(app)
 
 user = "ssm-user"
 bucket = "grabtaxi-logs-stg"
+if os.environ['S3_BUCKET'] is not None:
+    bucket = os.environ['S3_BUCKET']
+print("bucket is ", bucket)
 awss3 = AWSS3(user, bucket)
 
 # hello-world 测试连通情况
@@ -41,16 +44,12 @@ def downloadLogFromS3():
     endtimestr   = request.json["endtime"]
     targetpath   = request.json["outputpath"]
     filterlist   = request.json["filter"]
-    appname      = request.json["prefix"]
-    flist = []
-    for filterstr in filterlist:
-        f = lambda x : x.find(filterstr) != -1
-        flist.append(f)
-    outfilename = "-".join(map(lambda x : x.replace(":", "-"), filterlist)) + ".log"
+    apppredix    = request.json["prefix"]
+    outfilename = "S3" + "-".join(map(lambda x : x.replace(":", "-"), filterlist)) + ".log"
     targetfile = targetpath + "/" + outfilename
     targetfile = targetfile.replace(" ", "").replace("\n", "")
     try:
-        awss3.pull_log_into_file(appname + "/app", starttimestr, endtimestr, targetfile, filterlist)
+        awss3.pull_log_into_file(apppredix, starttimestr, endtimestr, targetfile, filterlist)
     except Exception as e:
         print(e)
         resp = {
